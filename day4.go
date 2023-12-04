@@ -32,8 +32,8 @@ func day4(part string, filename string) {
 	cards := parseDay4Input(input)
 
     switch part {
-    case "1": day4Part1(cards); break
-    case "2": day4Part2(cards); break
+    case "1": day4Part1(cards)
+    case "2": day4Part2(cards)
     default: panic("Invalid part for day 4!")
     }
 	
@@ -103,7 +103,6 @@ func parseDay4Input(input string) []Card {
             } else {
                 numberEnd = idx
             }
-            break
         case ' ':
             if current != nil && numberStart != -1 {
                 n, err := strconv.Atoi(input[numberStart : numberEnd+1])
@@ -115,12 +114,10 @@ func parseDay4Input(input string) []Card {
 
                 numberStart = -1
             }
-            break
         case '|':
             card.WinningNumbers = current
             numberStart = -1
             current = make([]int, 0)
-            break
         case ':':
             if numberStart != -1 {
                 cardID, err := strconv.Atoi(input[numberStart : numberEnd+1])
@@ -134,9 +131,7 @@ func parseDay4Input(input string) []Card {
             }
 
             current = make([]int, 0)
-            break
         case '\r':
-            break
         case '\n':
             if numberStart != -1 {
                 n, err := strconv.Atoi(input[numberStart : numberEnd+1])
@@ -152,7 +147,6 @@ func parseDay4Input(input string) []Card {
             current = nil
             cards = append(cards, card)
             card = NewCard()
-            break
         }
     }
 

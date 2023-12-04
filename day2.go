@@ -78,13 +78,10 @@ func day2Part2(games []Game) {
 				switch cubeSet.Color {
 				case RED:
 					minCubeSet.red = max(minCubeSet.red, cubeSet.Count)
-					break
 				case GREEN:
 					minCubeSet.green = max(minCubeSet.green, cubeSet.Count)
-					break
 				case BLUE:
 					minCubeSet.blue = max(minCubeSet.blue, cubeSet.Count)
-					break
 				}
 			}
 		}
@@ -112,13 +109,10 @@ func isValidReveal(reveal *Reveal) bool {
 		switch cubeSet.Color {
 		case RED:
 			isValid = cubeSet.Count <= TOTAL_RED_COUNT
-			break
 		case GREEN:
 			isValid = cubeSet.Count <= TOTAL_GREEN_COUNT
-			break
 		case BLUE:
 			isValid = cubeSet.Count <= TOTAL_BLUE_COUNT
-			break
 		}
 
 		if !isValid {
@@ -185,13 +179,10 @@ func parseDay2Input(content []byte) []Game {
 				switch color {
 				case "red":
 					cubeSet.Color = RED
-					break
 				case "blue":
 					cubeSet.Color = BLUE
-					break
 				case "green":
 					cubeSet.Color = GREEN
-					break
 				}
 
 				cubeSets = append(cubeSets, cubeSet)

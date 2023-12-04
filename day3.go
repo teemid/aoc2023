@@ -42,8 +42,8 @@ func day3(part string, filename string) {
     data := parseDay3Input(input)
 
     switch part {
-    case "1": day3Part1(input, data); break
-    case "2": day3Part2(input, data); break
+    case "1": day3Part1(input, data)
+    case "2": day3Part2(input, data)
     default: panic(fmt.Sprintf("Unknown part: %s", part))
     }
 
@@ -193,7 +193,6 @@ func parseDay3Input(input string) *DataDay3 {
 
 			col = -1
 			row++
-			break
 		default:
 			if part.start != -1 {
 				data.parts = append(data.parts, part)

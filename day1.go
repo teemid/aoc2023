@@ -17,8 +17,8 @@ func day1(part string, filename string) {
 	}
 
 	switch part {
-	case "1": day1Part1(content); break
-	case "2": day1Part2(content); break
+	case "1": day1Part1(content)
+	case "2": day1Part2(content)
     default: panic(fmt.Sprintf("Unknown part: %s", part))
 	}
 }
@@ -37,7 +37,6 @@ func day1Part1(content []byte) {
 			switch {
 			case '0' <= char && char <= '9':
 				digits = append(digits, string(char))
-				break
 			default:
 				continue
 			}
@@ -54,7 +53,6 @@ func day1Part1(content []byte) {
 				fmt.Printf("Error: %s\n", err)
 				os.Exit(1)
 			}
-			break
 		}
 
 		numbers = append(numbers, n)
