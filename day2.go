@@ -33,30 +33,25 @@ type Game struct {
 	Reveals []Reveal
 }
 
-func main() {
-	args := os.Args[1:]
-	if len(args) != 2 {
-		fmt.Println("Please provide a file name and part number")
-	}
-
-	content, err := os.ReadFile(args[0])
+func day2(part string, filename string) {
+	content, err := os.ReadFile(fmt.Sprintf("data/day2/%s.txt", filename))
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)
 	}
 
-	games := parseInput(content)
+	games := parseDay2Input(content)
 
-	if args[1] == "1" {
-		part1(games)
-	} else if args[1] == "2" {
-		part2(games)
+	if part == "1" {
+		day2Part1(games)
+	} else if part == "2" {
+		day2Part2(games)
 	} else {
 		fmt.Println("Please provide a valid part number")
 	}
 }
 
-func part1(games []Game) {
+func day2Part1(games []Game) {
 	sum := 0
 	for _, game := range games {
 		if isValidGame(&game) {
@@ -73,7 +68,7 @@ type MinCubeSet struct {
 	blue  int
 }
 
-func part2(games []Game) {
+func day2Part2(games []Game) {
 	sum := 0
 
 	for _, game := range games {
@@ -134,7 +129,7 @@ func isValidReveal(reveal *Reveal) bool {
 	return isValid
 }
 
-func parseInput(content []byte) []Game {
+func parseDay2Input(content []byte) []Game {
 	games := make([]Game, 0)
 	lines := strings.Split(string(content), "\n")
 	for _, line := range lines {

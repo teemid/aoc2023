@@ -10,34 +10,20 @@ import (
 
 const LineBreak = "\r\n"
 
-func main() {
-	args := os.Args[1:]
-	if len(args) == 0 {
-		os.Exit(1)
-	}
-
-	task := "1"
-	if len(args) > 1 {
-		task = args[1]
-	}
-
-	content, err := os.ReadFile(args[0])
+func day1(part string, filename string) {
+	content, err := os.ReadFile(fmt.Sprintf("data/day1/%s.txt", filename))
 	if err != nil {
-		fmt.Printf("Error: %s\n", err)
-		os.Exit(1)
+        panic(err)
 	}
 
-	switch task {
-	case "1":
-		task1(content)
-		break
-	case "2":
-		task2(content)
-		break
+	switch part {
+	case "1": day1Part1(content); break
+	case "2": day1Part2(content); break
+    default: panic(fmt.Sprintf("Unknown part: %s", part))
 	}
 }
 
-func task1(content []byte) {
+func day1Part1(content []byte) {
 	numbers := make([]int, 0)
 
 	lines := strings.Split(string(content), LineBreak)
@@ -92,7 +78,7 @@ type Digit struct {
 	Value int
 }
 
-func task2(content []byte) {
+func day1Part2(content []byte) {
 	digits := []Digit{
 		{"one", 1},
 		{"two", 2},
