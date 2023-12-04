@@ -1,190 +1,201 @@
 package main
 
 import (
-    "fmt"
-    "os"
-    "strconv"
+	"fmt"
+	"os"
+	"strconv"
+	"time"
 )
 
 const (
-    GEAR = iota
-    OTHER
+	GEAR = iota
+	OTHER
 )
 
 type PartNumber struct {
-    start int
-    end int
+	start int
+	end   int
 }
 
 type Symbol struct {
-    x int
-    y int
-    t int
+	x int
+	y int
+	t int
 }
 
 type Part struct {
-    x int 
-    y int
-    part *PartNumber
+	x    int
+	y    int
+	part *PartNumber
 }
 
 func NewPart() *PartNumber {
-    return &PartNumber{-1, 0}
+	return &PartNumber{-1, 0}
 }
 
 func main() {
-    args := os.Args[1:]
-    if len(args) != 1 {
-        fmt.Println("Usage: main <filename>")
-        os.Exit(1)
-    }
+	args := os.Args[1:]
+	if len(args) != 1 {
+		fmt.Println("Usage: main <filename>")
+		os.Exit(1)
+	}
 
-    content, err := os.ReadFile(args[0])
-    if err != nil {
-        fmt.Println("Error:", err)
-        os.Exit(1)
-    }
+	startTime := time.Now()
 
-    strconv.Atoi("1")
+	content, err := os.ReadFile(args[0])
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
 
-    symbols := make([]Symbol, 0)
-    partPositions := make([][]Part, 0)
-    parts := make([]*PartNumber, 0)
+	strconv.Atoi("1")
 
-    part := NewPart()
+	symbols := make([]Symbol, 0)
+	partPositions := make([][]Part, 0)
+	parts := make([]*PartNumber, 0)
 
-    input := string(content)
+	part := NewPart()
 
-    rowCount := 0
-    colCount := 0
+	input := string(content)
 
-    rowParts := make([]Part, 0)
+	rowCount := 0
+	colCount := 0
 
-    row := 0
-    col := -1
-    n := -1
-    for _, char := range input {
-        n++
-        col++
+	rowParts := make([]Part, 0)
 
-        rowCount = max(rowCount, row + 1)
+	row := 0
+	col := -1
+	n := -1
+	for _, char := range input {
+		n++
+		col++
 
-        switch char {
-        case ' ': continue
-        case '.': 
-            if part.start != -1 {
-                parts = append(parts, part)
-                part = NewPart()
-            }
-            continue
-        case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-            if part.start == -1 {
-                part.start = n
-                part.end = n
-            } else {
-                part.end = n
-            }
+		rowCount = max(rowCount, row+1)
 
-            rowParts = append(rowParts, Part{col, row, part})
-        case '\r': continue
-        case '\n': 
-            // Assumes part numbers don't cross lines
-            if part.start != -1 {
-                parts = append(parts, part)
-                part = NewPart()
-            }
+		switch char {
+		case ' ':
+			continue
+		case '.':
+			if part.start != -1 {
+				parts = append(parts, part)
+				part = NewPart()
+			}
+			continue
+		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+			if part.start == -1 {
+				part.start = n
+				part.end = n
+			} else {
+				part.end = n
+			}
 
-            partPositions = append(partPositions, rowParts)
-            rowParts = make([]Part, 0)
-            
-            colCount++
+			rowParts = append(rowParts, Part{col, row, part})
+		case '\r':
+			continue
+		case '\n':
+			// Assumes part numbers don't cross lines
+			if part.start != -1 {
+				parts = append(parts, part)
+				part = NewPart()
+			}
 
-            col = -1
-            row++
-            break
-        default:
-            if part.start != -1 {
-                parts = append(parts, part)
-                part = NewPart()
-            }
+			partPositions = append(partPositions, rowParts)
+			rowParts = make([]Part, 0)
 
-            t := OTHER
-            if char == '*' {
-                t = GEAR
-            }
+			colCount++
 
-            symbols = append(symbols, Symbol{col, row, t})
-        }
-    }
+			col = -1
+			row++
+			break
+		default:
+			if part.start != -1 {
+				parts = append(parts, part)
+				part = NewPart()
+			}
 
-    fmt.Printf("Rows count: %d\n", rowCount)
-    fmt.Printf("Column count: %d\n", colCount)
+			t := OTHER
+			if char == '*' {
+				t = GEAR
+			}
 
-    validParts := make(map[*PartNumber]*PartNumber)
+			symbols = append(symbols, Symbol{col, row, t})
+		}
+	}
 
-    ratioSum := 0
-    for _, symbol := range symbols {
-        adjacentParts := make(map[*PartNumber]*PartNumber)
+	fmt.Printf("Rows count: %d\n", rowCount)
+	fmt.Printf("Column count: %d\n", colCount)
 
-        for y := symbol.y - 1; y <= symbol.y + 1; y++ {
-            if y < 0 || y >= rowCount {
-                continue
-            }
+	validParts := make(map[*PartNumber]*PartNumber)
 
-            partRow := partPositions[y];
-            for _, part := range partRow {
-                diffX := abs(part.x - symbol.x)
-                diffY := abs(part.y - symbol.y)
-                if diffX <= 1 && diffY <= 1 {
-                    validParts[part.part] = part.part 
-                    adjacentParts[part.part] = part.part
-                }
-            }
-        } 
+	ratioSum := 0
+	for _, symbol := range symbols {
+		adjacentParts := make(map[*PartNumber]*PartNumber)
 
-        if symbol.t == GEAR && len(adjacentParts) == 2 {
-            parts := make([]*PartNumber, 0, 2)
-            for _, part := range adjacentParts {
-                parts = append(parts, part)
-            }
+		for y := symbol.y - 1; y <= symbol.y+1; y++ {
+			if y < 0 || y >= rowCount {
+				continue
+			}
 
-            n1 := parts[0]
-            n2 := parts[1]
+			partRow := partPositions[y]
+			for _, part := range partRow {
+				diffX := abs(part.x - symbol.x)
+				diffY := abs(part.y - symbol.y)
+				if diffX <= 1 && diffY <= 1 {
+					validParts[part.part] = part.part
+					adjacentParts[part.part] = part.part
+				}
+			}
+		}
 
-            c1, err := strconv.Atoi(input[n1.start:n1.end+1])
-            if err != nil {
-                fmt.Printf("Error: %s\n", err)
-                os.Exit(1)
-            }
-            c2, err := strconv.Atoi(input[n2.start:n2.end+1])
-            if err != nil {
-                fmt.Printf("Error: %s\n", err)
-                os.Exit(1)
-            }
+		if symbol.t == GEAR && len(adjacentParts) == 2 {
+			parts := make([]*PartNumber, 0, 2)
+			for _, part := range adjacentParts {
+				parts = append(parts, part)
+			}
 
-            ratio := c1 * c2
-            ratioSum += ratio
-        }
-    }
+			n1 := parts[0]
+			n2 := parts[1]
 
-    sum := 0
-    for _, part := range validParts {
-        n, err := strconv.Atoi(input[part.start:part.end+1])
-        if err != nil {
-            panic(err)
-        }
+			c1, err := strconv.Atoi(input[n1.start : n1.end+1])
+			if err != nil {
+				fmt.Printf("Error: %s\n", err)
+				os.Exit(1)
+			}
+			c2, err := strconv.Atoi(input[n2.start : n2.end+1])
+			if err != nil {
+				fmt.Printf("Error: %s\n", err)
+				os.Exit(1)
+			}
 
-        sum += n
-    }
+			ratio := c1 * c2
+			ratioSum += ratio
+		}
+	}
 
-    fmt.Printf("Sum: %d\n", sum)
-    fmt.Printf("Ratio sum: %d\n", ratioSum)
+	sum := 0
+	for _, part := range validParts {
+		n, err := strconv.Atoi(input[part.start : part.end+1])
+		if err != nil {
+			panic(err)
+		}
+
+		sum += n
+	}
+
+	fmt.Printf("Sum: %d\n", sum)
+	fmt.Printf("Ratio sum: %d\n", ratioSum)
+
+	fmt.Printf("Time: %s\n", time.Since(startTime))
+}
+
+func part1(input string) {
+
 }
 
 func abs(x int) int {
-    if x < 0 {
-        return -x
-    }
+	if x < 0 {
+		return -x
+	}
 
-    return x
+	return x
 }
