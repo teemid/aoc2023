@@ -16,10 +16,11 @@ func main() {
     start := time.Now()
 
     switch args[0] {
-    case "1": day1(args[1], args[2]); break
-    case "2": day2(args[1], args[2]); break
-    case "3": day3(args[1], args[2]); break
-    case "4": day4(args[1], args[2]); break
+    case "1": day1(args[1], args[2])
+    case "2": day2(args[1], args[2])
+    case "3": day3(args[1], args[2])
+    case "4": day4(args[1], args[2])
+    case "5": day5(args[1], args[2])
     }
 
     fmt.Printf("Execution time: %s", time.Since(start))
