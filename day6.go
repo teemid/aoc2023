@@ -40,7 +40,7 @@ func solveRaces(races []Race) int {
     prod := 1
 
     for _, race := range races {
-        x1, x2 := solve(float64(race.Time), float64(-race.Distance)) 
+        x1, x2 := solve(float64(race.Time), float64(-race.Distance - 1)) 
 
         ways := abs(x1 - x2) + 1
 
@@ -56,16 +56,6 @@ func solve(b float64, c float64) (int, int) {
 
     x1 := (-b + inner) / denom
     x2 := (-b - inner) / denom 
-
-    xt1 := math.Trunc(x1)
-    if x1 == xt1 {
-        x1 = x1 + 0.5
-    }
-
-    xt2 := math.Trunc(x2)
-    if x2 == xt2 {
-        x2 = x2 - 0.5
-    }
 
     return int(math.Ceil(x1)), int(math.Floor(x2))
 }
