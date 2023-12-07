@@ -35,17 +35,20 @@ func NewPart() *PartNumber {
 func day3(part string, filename string) {
 	content, err := os.ReadFile(fmt.Sprintf("data/day3/%s.txt", filename))
 	if err != nil {
-        panic(err)
+		panic(err)
 	}
 
-    input := string(content)
-    data := parseDay3Input(input)
+	input := string(content)
+	data := parseDay3Input(input)
 
-    switch part {
-    case "1": day3Part1(input, data)
-    case "2": day3Part2(input, data)
-    default: panic(fmt.Sprintf("Unknown part: %s", part))
-    }
+	switch part {
+	case "1":
+		day3Part1(input, data)
+	case "2":
+		day3Part2(input, data)
+	default:
+		panic(fmt.Sprintf("Unknown part: %s", part))
+	}
 
 }
 
@@ -68,7 +71,7 @@ func day3Part1(input string, data *DataDay3) {
 			}
 		}
 	}
-    
+
 	sum := 0
 	for _, part := range validParts {
 		n, err := strconv.Atoi(input[part.start : part.end+1])
@@ -113,11 +116,11 @@ func day3Part2(input string, data *DataDay3) {
 
 			c1, err := strconv.Atoi(input[n1.start : n1.end+1])
 			if err != nil {
-                panic(err)
+				panic(err)
 			}
 			c2, err := strconv.Atoi(input[n2.start : n2.end+1])
 			if err != nil {
-                panic(err)
+				panic(err)
 			}
 
 			ratio := c1 * c2
@@ -125,23 +128,23 @@ func day3Part2(input string, data *DataDay3) {
 		}
 	}
 
-    fmt.Printf("Ratio sum: %d\n", ratioSum)
+	fmt.Printf("Ratio sum: %d\n", ratioSum)
 }
 
 type DataDay3 struct {
-    rowCount int
-    symbols []Symbol
-    partPositions [][]Part
-    parts []*PartNumber
+	rowCount      int
+	symbols       []Symbol
+	partPositions [][]Part
+	parts         []*PartNumber
 }
 
 func parseDay3Input(input string) *DataDay3 {
-    data := &DataDay3{
-        rowCount: 0,
-        symbols: make([]Symbol, 0),
-        partPositions: make([][]Part, 0),
-        parts: make([]*PartNumber, 0),
-    }
+	data := &DataDay3{
+		rowCount:      0,
+		symbols:       make([]Symbol, 0),
+		partPositions: make([][]Part, 0),
+		parts:         make([]*PartNumber, 0),
+	}
 
 	colCount := 0
 
@@ -208,7 +211,7 @@ func parseDay3Input(input string) *DataDay3 {
 		}
 	}
 
-    return data
+	return data
 }
 
 func abs(x int) int {

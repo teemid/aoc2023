@@ -13,13 +13,16 @@ const LineBreak = "\r\n"
 func day1(part string, filename string) {
 	content, err := os.ReadFile(fmt.Sprintf("data/day1/%s.txt", filename))
 	if err != nil {
-        panic(err)
+		panic(err)
 	}
 
 	switch part {
-	case "1": day1Part1(content)
-	case "2": day1Part2(content)
-    default: panic(fmt.Sprintf("Unknown part: %s", part))
+	case "1":
+		day1Part1(content)
+	case "2":
+		day1Part2(content)
+	default:
+		panic(fmt.Sprintf("Unknown part: %s", part))
 	}
 }
 
