@@ -36,10 +36,14 @@ func day8Part1(m *DesertMap, args... string) int {
     steps := 0
     curr := "AAA"
     goal := "ZZZ"
-    if len(args) == 2 {
+    part2 := (len(args) == 2)
+    if part2 {
         curr = args[0]
         goal = args[1]
-    } 
+        part2 = true
+    }
+
+    fmt.Printf("Starting at %s, going to %s\n", curr, goal)
    
     l := len(m.directions)
 
@@ -55,7 +59,7 @@ func day8Part1(m *DesertMap, args... string) int {
         case 'R': curr = n.R
         }
 
-        if (goal == "ZZZ" && curr == "ZZZ") || (curr[2] == 'Z') {
+        if (!part2 && curr == goal) || (part2 && curr[2] == 'Z') {
             fmt.Printf("Found ZZZ in %d steps\n", steps + 1)
 
             return steps + 1
@@ -65,14 +69,12 @@ func day8Part1(m *DesertMap, args... string) int {
     }
 }
 
-func day8Part2(m *DesertMap) { 
-    steps := 0
-    l := len(m.directions)
+func day8Part2(m *DesertMap) {
     positions := make([]string, 0)
 
     for key := range m.nodes {
         if key[2] == 'A' {
-            positions = append(positions, key, "**Z")
+            positions = append(positions, key)
         }
     }
 
@@ -89,61 +91,31 @@ func day8Part2(m *DesertMap) {
     for i, pos := range positions {
         fmt.Printf("pos: %s\n", pos)
 
-        steps := day8Part1(m, pos)
+        steps := day8Part1(m, pos, "**Z")
 
         stepList[i] = steps
     }
 
-    fmt.Printf("stepList: %v\n", stepList)
+    answer := lcm(stepList...)
 
-    for {
-        c := m.directions[steps % l]
+    fmt.Printf("Answer: %d\n", answer)
+}
 
-        fmt.Printf("Step: %d\n", steps + 1)
-        fmt.Printf("Direction: %c\n", c)
-        fmt.Printf("Positions: %v\n", positions)
-
-        // fmt.Printf("positions: %v\n", positions)
-    
-        count := 0
-        isExit := true
-        nextPositions := make([]string, len(positions))
-        for i, pos := range positions {
-            n, ok := m.nodes[pos]
-            if !ok {
-                panic(fmt.Sprintf("Could not find node %s", pos))
-            }
-
-            // fmt.Printf("pos: %s, node: %v\n", pos, n)
-
-            next := ""
-            switch c {
-                case 'L': next = n.L
-                case 'R': next = n.R
-            }
-
-            if next[2] != 'Z' {
-                isExit = false
-            } else {
-                count++
-            }
-
-            nextPositions[i] = next
-        }
-
-        if count == len(positions) {
-            panic("All positions are at exit")
-        }
-
-        if isExit {
-            fmt.Printf("Found exit in %d steps\n", steps + 1)
-
-            return
-        }
-
-        positions = nextPositions
-        steps++
+func lcm(args... int) int {
+    ans := args[0]
+    for i := 1; i < len(args); i++ {
+        ans = (args[i] * ans) / gcd(args[i], ans)
     }
+
+    return ans
+}
+
+func gcd(a, b int) int {
+    for b != 0 {
+        a, b = b, a % b
+    }
+
+    return a
 }
 
 func day8ParseInput(input string) *DesertMap {
