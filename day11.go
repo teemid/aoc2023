@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	"golang.org/x/exp/slices"
 )
 
 type GalaxyImage struct {
@@ -21,13 +19,14 @@ func day11(part string, filename string) {
     }
 
     input := string(content)
-    gi := day11ParseInput(input)
 
     switch part {
     case "1":
-        day11Part1(gi)
+        positions := day11ParseInput(input, 1)
+        day11Part1(positions)
     case "2":
-        panic("not implemented")
+        positions := day11ParseInput(input, 1_000_000-1)
+        day11Part1(positions)
     }
 }
 
@@ -36,17 +35,14 @@ type GalaxyPair struct {
     g2 Point
 }
 
-func day11Part1(gi *GalaxyImage) {
-    gi.Expand()
-    gi.FindGalaxies()
-
-    sum := 0
-    gs := gi.galaxies[:]
-    for len(gs) > 1 {
-        g1 := gs[0]
-        gs = gs[1:]
-        for _, g2 := range gs {
-            d := distance(g1, g2)
+func day11Part1(positions []Point64) {
+    sum := int64(0)
+    ps := positions[:]
+    for len(ps) > 1 {
+        p1 := ps[0]
+        ps = ps[1:]
+        for _, p2 := range ps {
+            d := distance(p1, p2)
             
             sum += d
         }
@@ -55,89 +51,78 @@ func day11Part1(gi *GalaxyImage) {
     fmt.Printf("sum: %d\n", sum)
 }
 
-func printImage(gi *GalaxyImage) {
-    for _, row := range gi.image {
-        for _, c := range row {
-            fmt.Printf("%c", c)
-        }
-        fmt.Println()
-    }
-    fmt.Println()
+func distance(p1, p2 Point64) int64 {
+    return abs64(p1.x - p2.x) + abs64(p1.y - p2.y)
 }
 
-func (gi *GalaxyImage) Expand() {
-    columns := make([]bool, len(gi.image[0]))
-    for c := range columns {
-        columns[c] = true
+func abs64(i int64) int64 {
+    if i < 0 {
+        return -i
     }
 
-    rows := make([]int, 0)
-    for y, row := range gi.image {
-        emptyRow := true
-        for x, char := range row {
-            if char != '.' {
-                emptyRow = false
-                columns[x] = false
-            }
-        }
-
-        if emptyRow {
-            rows = append(rows, y)
-        }
-    }
-
-    fmt.Printf("rows: %v\n", rows)
-
-    for i, y := range rows {
-        gi.image = slices.Insert(gi.image, y+i, gi.image[y+i])
-    }
-
-    fmt.Println("columns: ", columns)
-
-    i := 0
-    for x, isEmpty := range columns {
-        if isEmpty {
-            for y := range gi.image {
-                gi.image[y] = slices.Insert(gi.image[y], x+i, '.')
-
-            }
-
-            i++
-        } 
-    }
+    return i
 }
 
-func (gi *GalaxyImage) FindGalaxies() {
-    for y, row := range gi.image {
-        for x, char := range row {
-            if char == '#' {
-                gi.galaxies = append(gi.galaxies, Point{x, y})
-            }
-        }
-    }
+type Point64 struct {
+    x int64
+    y int64
 }
 
-func distance(p1, p2 Point) int {
-    return abs(p1.x - p2.x) + abs(p1.y - p2.y)
-}
-
-func day11ParseInput(input string) *GalaxyImage {
-    gi := &GalaxyImage{
-        galaxies: make([]Point, 0),
-        image: make([][]rune, 0),
-    }
-
+func day11ParseInput(input string, offset int64) []Point64 {
     scanner := bufio.NewScanner(strings.NewReader(input))
     scanner.Split(bufio.ScanLines)
 
-    y := 0
-    for scanner.Scan() {
-        line := scanner.Text()
-        runes := []rune(line)
-        gi.image = append(gi.image, runes)
+    positions := make([]Point64, 0)
+    rows := make([]int64, 0)
+    cols := make([]bool, 0)
 
-        y++
+    m := make([][]rune, 0)
+
+    yOffset := int64(0)
+    for y := 0; scanner.Scan(); y++ {
+        line := scanner.Text()
+        blankLine := true
+        for x, char := range line {
+            if len(cols) == 0 {
+                cols = make([]bool, len(line))
+                for i := range cols {
+                    cols[i] = true
+                }
+            }
+
+            m = append(m, []rune(line))
+
+            if char == '#' {
+                positions = append(positions, Point64{int64(x), int64(y)})
+                blankLine = false
+                cols[x] = false
+            }
+        }
+
+        if blankLine {
+            yOffset++
+        }
+
+        rows = append(rows, yOffset)
     }
 
-    return gi
+    xOffset := int64(0)
+    columns := make([]int64, len(cols))
+    for i, col := range cols {
+        if col {
+            xOffset++
+        }
+
+        columns[i] = xOffset
+    }
+
+    for i, pos := range positions {
+        pos.x += columns[pos.x] * offset
+        pos.y += rows[pos.y] * offset
+
+        positions[i] = pos
+    }
+
+    return positions
 }
+
