@@ -38,6 +38,8 @@ func main() {
 		day10(args[1], args[2])
     case "11":
         day11(args[1], args[2])
+    case "12":
+        day12(args[1], args[2])
 	}
 
 	fmt.Printf("Execution time: %s", time.Since(start))
