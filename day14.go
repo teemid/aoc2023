@@ -26,14 +26,44 @@ func day14(part string, filename string) {
 }
 
 func day14Part1(rocks [][]rune) {
-    fmt.Println(rocks)
+    tilt(rocks)
 }
 
 func tilt(rocks [][]rune) {
-    for y, line := range rocks {
-        for x, e := range line {
-            fmt.Printf("%d,%d: %c\n", x, y, e)
+    rows := len(rocks)
+    cols := len(rocks[0])
+
+    load := 0
+    for col := 0; col < cols; col++ {
+        canMoveTo := 0
+        for y, line := range rocks {
+            c := line[col]
+
+            switch c {
+                case '#': canMoveTo = y + 1
+                case 'O':
+                    // NOTE (Emil): Move rock
+                    if canMoveTo < y {
+                        rocks[y][col] = '.'
+                        rocks[canMoveTo][col] = 'O'
+
+                        load += (rows - canMoveTo)
+                        canMoveTo = canMoveTo + 1
+                    } else {
+                        load += (rows - y)
+                        canMoveTo = y + 1
+                    }
+                case '.': continue
+            }
         }
+    }
+
+    fmt.Printf("Load: %d\n", load)
+}
+
+func printRocks(rocks [][]rune) {
+    for _, line := range rocks {
+        fmt.Println(string(line))
     }
 }
 
